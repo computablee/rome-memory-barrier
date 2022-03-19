@@ -1,0 +1,5 @@
+benchspec/
+*.out
+result/
+tmp/
+version.txt
