@@ -11,6 +11,6 @@ export ROOTDIR=/apps/arch/cpu2017
 export CONFIG=$ROOTDIR/config/$CFFILE
 export RUNCPU=$ROOTDIR/bin/runcpu
 #export BUILD="all"
-export BUILD="603.bwaves_s"
+export BUILD="602.gcc_s"
 
 $RUNCPU --size=test --config=$CONFIG $BUILD

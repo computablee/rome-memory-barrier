@@ -12,4 +12,4 @@ export CONFIG=$ROOTDIR/config/$CFFILE
 export RUNCPU=$ROOTDIR/bin/runcpu
 export BUILD="all"
 
-$RUNCPU --size=test --config=$CONFIG --action build $BUILD
+$RUNCPU --action=build --config=$CONFIG $BUILD
