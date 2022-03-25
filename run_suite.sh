@@ -13,7 +13,7 @@ export CONFIG=$ROOTDIR/config/$CFFILE
 export REFCFG=$ROOTDIR/config/$REFFILE
 export RUNCPU=$ROOTDIR/bin/runcpu
 export BUILD="all"
-#export BUILD="603.bwaves_s"
+#export BUILD="520.omnetpp_r"
 
 $RUNCPU --size=ref --config=$CONFIG $BUILD
 $RUNCPU --size=ref --reportable --config=$REFCFG $BUILD
