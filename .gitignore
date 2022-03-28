@@ -2,7 +2,4 @@ benchspec/
 result/
 tmp/
 version.txt
-uprof_results/5*.*/
-uprof_results/6*.*/
-uprof_results/9*.*/
 *nohup*
