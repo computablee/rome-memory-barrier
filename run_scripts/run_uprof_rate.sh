@@ -141,11 +141,14 @@ for i in $(ls -1 | grep "_r"); do
         export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/scale_results/$i\_$j
         rm -rf $RESULT_LOC
         mkdir $RESULT_LOC
+        
         echo "Running $i with $j instances"
         for (( k=1; k<=$j; k++ )); do
             run_benchmark $i $k $RESULT_LOC $RUN_DIR
         done
         wait
+
+        rm $RESULT_LOC/*.out
     done
     cd ../../..
 done
