@@ -2,6 +2,8 @@
 
 ulimit -s unlimited
 export OMP_STACKSIZE=192M
+export OMP_NUM_THREADS=1
+export OMP_SCHEDULE=static
 
 cd /home/student/pal0009/CPE-631-Term-Project/benchspec/CPU
 
@@ -103,14 +105,16 @@ function run_benchmark {
     if [ $benchname = "gcc_r" ] ; then
         echo "detected gcc, running on core $core"
         taskset -c $core $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+    elif [ $benchname = "xalancbmk_r" ] ; then
+        echo "detected xalancbmk, running on core $core"
+        taskset -c $core $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     else
         echo "running on core $core"
         taskset -c $core $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     fi
 }
 
-#for i in $(ls -1 | grep "_r"); do
-for i in 502.gcc_r ; do
+for i in $(ls -1 | grep "_r"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
     cd $RUN_DIR
     for j in 1 3 6 24 48 ; do
