@@ -1,222 +1,72 @@
 import csv
 import os
 
+intSpeed = ['600.perlbench_s', '602.gcc_s', '605.mcf_s', '620.omnetpp_s', '623.xalancbmk_s',
+            '625.x264_s', '631.deepsjeng_s', '641.leela_s', '648.exchange2_s', '657.xz_s']
+intRate = ['500.perlbench_r', '502.gcc_r', '505.mcf_r', '520.omnetpp_r', '523.xalancbmk_r',
+            '525.x264_r', '531.deepsjeng_r', '541.leela_r', '548.exchange2_r', '557.xz_r']
+fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '628.pop2_s',
+           '638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s']
+fpRate = ['503.bwaves_r', '507.cactuBSSN_r', '508.namd_r', '510.parest_r', '511.povray_r',
+          '519.lbm_r', '521.wrf_r', '526.blender_r', '527.cam4_r', '538.imagick_r', '544.nab_r',
+          '549.fotonik3d_r', '554.roms_r']
+
+# ADD 627.cam4_s back in if available!
+#fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '627.cam4_s', '628.pop2_s',
+           #'638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s']
+
 def main():
+    #create /uprof_results_cumulative directory is doesn't exist
+    directory = os.getcwd()+"/uprof_results_cumulative"
+    if (not (os.path.exists(directory))):
+        os.makedirs(directory)
+
     cwd = os.getcwd()+"/uprof_results"
+    dirList = os.listdir(cwd)
+
+    dirList.remove('.placeholder') #remove non-benchmark entry
+    #remove benchmarks that are not in the 43
+    dirList.remove('997.specrand_fr')
+    dirList.remove('998.specrand_is')
+    dirList.remove('999.specrand_ir')
+    dirList.remove('996.specrand_fs')
     
-    #500.perlbench_r
-    inputFile = cwd+"/500.perlbench_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/500_perlbench_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
 
-    #502.gcc_r
-    inputFile = cwd+"/502.gcc_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/502_gcc_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
+    #Check if any benchmark directories are missing, if any are print them
+    benchmarks_total = intSpeed+intRate+fpSpeed+fpRate
+    set_difference = set(benchmarks_total).symmetric_difference(set(dirList))
+    list_difference = list(set_difference)
+    if (len(list_difference) > 0):
+        print("Some benchmark(s) are missing.")
+        for entry in list_difference:
+            print(entry)
 
-    #503.bwaves_r
-    inputFile = cwd+"/503.bwaves_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/503_bwaves_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
+    serial = intRate+intSpeed+fpRate
+    parallel = fpSpeed
 
-    #505.mcf_r
-    inputFile = cwd+"/505.mcf_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/505_mcf_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
+    #Parse Serial benchmarks
+    for benchmark in serial:
+        inputFile = cwd+'/'+benchmark+"/events.csv"
+        outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
+        if (not (os.path.exists(outputDir))):
+            os.makedirs(outputDir)
+        outputFile = outputDir+"/events.csv"
+        processCSVFile(inputFile, outputFile, True)
 
-    #507.cactuBSSN_r
-    inputFile = cwd+"/507.cactuBSSN_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/507_cactuBSSN_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
+    #Parse Parallel benchmarks
+    for benchmark in parallel:
+        inputFile = cwd+'/'+benchmark+"/events.csv"
+        outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
+        if (not (os.path.exists(outputDir))):
+            os.makedirs(outputDir)
+        outputFile = outputDir+"/events.csv"
+        processCSVFile(inputFile, outputFile, False)
 
-    #508.namd_r
-    inputFile = cwd+"/508.namd_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/508_namd_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #510.parest_r
-    inputFile = cwd+"/510.parest_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/510_parest_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #511.povray_r
-    inputFile = cwd+"/511.povray_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/511_povray_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #519.lbm_r
-    inputFile = cwd+"/519.lbm_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/519_lbm_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #520.omnetpp_r
-    inputFile = cwd+"/520.omnetpp_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/520_omnetpp_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #521.wrf_r
-    inputFile = cwd+"/521.wrf_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/521_wrf_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #523.xalancbmk_r
-    inputFile = cwd+"/523.xalancbmk_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/523_xalancbmk_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #525.x264_r
-    inputFile = cwd+"/525.x264_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/525_x264_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #526.blender_r
-    inputFile = cwd+"/526.blender_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/526_blender_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #527.cam4_r
-    inputFile = cwd+"/527.cam4_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/527_cam4_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #531.deepsjeng_r
-    inputFile = cwd+"/531.deepsjeng_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/531_deepsjeng_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #538.imagick_r
-    inputFile = cwd+"/538.imagick_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/538_imagick_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #541.leela_r
-    inputFile = cwd+"/541.leela_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/541_leela_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #544.nab_r
-    inputFile = cwd+"/544.nab_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/544_nab_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #548.exchange2_r
-    inputFile = cwd+"/548.exchange2_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/548_exchange2_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #549.fotonik3d_r
-    inputFile = cwd+"/549.fotonik3d_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/549_fotonik3d_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #554.roms_r
-    inputFile = cwd+"/554.roms_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/554_roms_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #557.xz_r
-    inputFile = cwd+"/557.xz_r/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/557_xz_r_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #600.perlbench_s
-    inputFile = cwd+"/600.perlbench_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/600_perlbench_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-    #602.gcc_s
-    inputFile = cwd+"/602.gcc_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/602_gcc_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #603.bwaves_s
-    inputFile = cwd+"/603.bwaves_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/603_bwaves_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #605.mcf_s
-    inputFile = cwd+"/605.mcf_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/605_mcf_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #607.cactuBSSN_s
-    inputFile = cwd+"/607.cactuBSSN_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/607_cactuBSSN_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #619.lbm_s
-    inputFile = cwd+"/619.lbm_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/619_lbm_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #620.omnetpp_s
-    inputFile = cwd+"/620.omnetpp_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/620_omnetpp_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #621.wrf_s
-    inputFile = cwd+"/621.wrf_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/621_wrf_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #623.xalancbmk_s
-    inputFile = cwd+"/623.xalancbmk_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/623_xalancbmk_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #625.x264_s
-    inputFile = cwd+"/625.x264_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/625_x264_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #628.pop2_s
-    inputFile = cwd+"/628.pop2_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/628_pop2_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #631.deepsjeng_s
-    inputFile = cwd+"/631.deepsjeng_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/631_deepsjeng_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #638.imagick_s
-    inputFile = cwd+"/638.imagick_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/638_imagick_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #641.leela_s
-    inputFile = cwd+"/641.leela_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/641_leela_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #644.nab_s
-    inputFile = cwd+"/644.nab_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/644_nab_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #648.exchange2_s
-    inputFile = cwd+"/648.exchange2_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/648_exchange2_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #649.fotonik3d_s
-    inputFile = cwd+"/649.fotonik3d_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/649_fotonik3d_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #654.roms_s
-    inputFile = cwd+"/654.roms_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/654_roms_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-    
-    #657.xz_s
-    inputFile = cwd+"/657.xz_s/events.csv"
-    outputFile = os.getcwd()+"/uprof_results_cumulative/657_xz_s_events_cumulative.csv"
-    processCSVFile(inputFile, outputFile)
-
-def processCSVFile(inputFile, outputFile):
+def processCSVFile(inputFile, outputFile, s):
     #entire csv file read into data easier to handle odd csv spacing of data
     data = []
+
+    serial = s
 
     coreMetrics = []
     ccxMetrics = []
@@ -231,9 +81,9 @@ def processCSVFile(inputFile, outputFile):
         for row in reader:
             data.append(row)
     
-    coreMetrics = processCoreMetrics(data)
-    ccxMetrics = processCCXMetrics(data)
-    pkgMetrics = processPKGMetrics(data)
+    coreMetrics = processCoreMetrics(data, serial)
+    ccxMetrics = processCCXMetrics(data, serial)
+    pkgMetrics = processPKGMetrics(data, serial)
 
     #write results to new 'cumulativeMetrics.csv' file
     rows = []
@@ -250,57 +100,81 @@ def processCSVFile(inputFile, outputFile):
         writer.writerow(fields)
         writer.writerows(rows)
 
-def processCoreMetrics(data):
+def processCoreMetrics(data, serial):
     headers = []
     core = []
 
     for i in range(22):
         headers.append(data[0][i])
 
-    for i in range (22):
-        sum = 0
-        row = []
-        for j in range(0+i,1035+i,22):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        core.append(row)
+    #if serial only process CORE-0
+    if (serial):
+        for i in range(22):
+            row = []
+            row.append(headers[i])
+            row.append(data[1][i])
+            core.append(row)
+    else:
+        for i in range(22):
+            sum = 0
+            row = []
+            for j in range(0+i,1035+i,22):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            core.append(row)
 
     return core
 
-def processCCXMetrics(data):
+def processCCXMetrics(data, serial):
     headers = []
     ccx = []
 
     for i in range(1056,1062):
         headers.append(data[0][i])
 
-    for i in range (6):
-        sum = 0
-        row = []
-        for j in range(1056+i,1151+i,6):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        ccx.append(row)
+    #if serial only process CCX-0
+    if (serial):
+        for i in range(1056,1062):
+            row = []
+            row.append(headers[i-1056])
+            row.append(data[1][i])
+            ccx.append(row)
+    else:
+        for i in range(6):
+            sum = 0
+            row = []
+            for j in range(1056+i,1151+i,6):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            ccx.append(row)
 
     return ccx
 
-def processPKGMetrics(data):
+def processPKGMetrics(data, serial):
     headers = []
     pkg = []
 
     for i in range(1152,1169):
         headers.append(data[0][i])
 
-    for i in range (17):
-        sum = 0
-        row = []
-        for j in range(1152+i,1186+i,17):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        pkg.append(row)
+    #if serial only process PKG-0
+    if (serial):
+        for i in range (1152,1169):
+            row = []
+            row.append(headers[i-1152])
+            row.append(data[1][i])
+            pkg.append(row)
+    else:
+        for i in range (17):
+            sum = 0
+            row = []
+            for j in range(1152+i,1186+i,17):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            pkg.append(row)
 
     return pkg
 
