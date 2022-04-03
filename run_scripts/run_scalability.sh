@@ -104,13 +104,13 @@ function run_benchmark {
 
     if [ $benchname = "gcc_r" ] ; then
         echo "detected gcc, running on core $core"
-        taskset -c $core $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "xalancbmk_r" ] ; then
         echo "detected xalancbmk, running on core $core"
-        taskset -c $core $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     else
         echo "running on core $core"
-        taskset -c $core $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     fi
 }
 
