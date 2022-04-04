@@ -16,6 +16,8 @@ fpRate = ['503.bwaves_r', '507.cactuBSSN_r', '508.namd_r', '510.parest_r', '511.
            #'638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s']
 
 def main():
+    os.chdir("..")
+
     #create /uprof_results_cumulative directory is doesn't exist
     directory = os.getcwd()+"/uprof_results_cumulative"
     if (not (os.path.exists(directory))):
