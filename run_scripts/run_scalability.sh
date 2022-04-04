@@ -5,6 +5,13 @@ export OMP_STACKSIZE=192M
 export OMP_NUM_THREADS=1
 export OMP_SCHEDULE=static
 
+# TODO: benchmarks failing
+# 503.bwaves_r      - read past end of file (parameter error?)  - fixed
+# 507.cactuBSSN_r   - not found                                 - fixed
+# 508.namd_r        - no input file (parameter error)           - fixed
+# 510.parest_r      - no input file (parameter error)           - fixed
+# 554.roms_r        - bash error                                - fixed
+
 cd /home/student/pal0009/CPE-631-Term-Project/benchspec/CPU
 
 function flags {
@@ -27,10 +34,10 @@ function flags {
             echo "spec_ref.par"
         ;;
         namd_r)
-            echo ""
+            echo "--input apoa1.input --output apoa1.ref.output --iterations 65"
         ;;
         parest_r)
-            echo "--input apoa1.input --output apoa1.ref.output --iterations 65"
+            echo "ref.prm"
         ;;
         povray_r)
             echo "SPEC-benchmark-ref.ini"
@@ -102,15 +109,30 @@ function run_benchmark {
 
     let core=$instance-1
 
+    export TIME_MONITOR="/bin/time -p -o $outloc/$instance.time"
+    export CORE_PIN="taskset -c $core"
+
+    #benchmarks with different names for the executable than the folder
     if [ $benchname = "gcc_r" ] ; then
         echo "detected gcc, running on core $core"
-        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $TIME_MONITOR $CORE_PIN $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "xalancbmk_r" ] ; then
         echo "detected xalancbmk, running on core $core"
-        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $TIME_MONITOR $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+    elif [ $benchname = "cactuBSSN_r" ] ; then
+        echo "detected cactuBSSN, running on core $core"
+        $TIME_MONITOR $CORE_PIN $rundir/cactusBSSN_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+    #benchmarks that use bash tokens in the parameters
+    elif [ $benchname = "bwaves_r" ] ; then
+        echo "detected bwaves, running on core $core"
+        $TIME_MONITOR $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 bwaves_1 < bwaves_1.in > $outloc/$instance.out 2>> $outloc/$instance.err &
+    elif [ $benchname = "roms_r" ] ; then
+        echo "detected roms, running on core $core"
+        $TIME_MONITOR $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 < ocean_benchmark2.in.x > $outloc/$instance.out 2>> $outloc/$instance.err &
+    #everything else
     else
         echo "running on core $core"
-        /bin/time -p -o $outloc/$instance.time taskset -c $core $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $TIME_MONITOR $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     fi
 }
 
@@ -121,11 +143,14 @@ for i in $(ls -1 | grep "_r"); do
         export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/scale_results/$i\_$j
         rm -rf $RESULT_LOC
         mkdir $RESULT_LOC
+        
         echo "Running $i with $j instances"
         for (( k=1; k<=$j; k++ )); do
             run_benchmark $i $k $RESULT_LOC $RUN_DIR
         done
         wait
+
+        rm $RESULT_LOC/*.out
     done
     cd ../../..
 done
