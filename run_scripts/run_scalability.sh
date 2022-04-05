@@ -118,7 +118,8 @@ function run_benchmark {
         $TIME_MONITOR $CORE_PIN $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "xalancbmk_r" ] ; then
         echo "detected xalancbmk, running on core $core"
-        $TIME_MONITOR $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        #pipe to /dev/null because otherwise the filesystem gets too stressed to properly log time
+        $TIME_MONITOR $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > /dev/null 2>> $outloc/$instance.err &
     elif [ $benchname = "cactuBSSN_r" ] ; then
         echo "detected cactuBSSN, running on core $core"
         $TIME_MONITOR $CORE_PIN $rundir/cactusBSSN_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
@@ -136,7 +137,8 @@ function run_benchmark {
     fi
 }
 
-for i in $(ls -1 | grep "_r"); do
+#for i in $(ls -1 | grep "_r"); do
+for i in 523.xalancbmk_r ; do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
     cd $RUN_DIR
     for j in 1 3 6 24 48 ; do
@@ -150,7 +152,7 @@ for i in $(ls -1 | grep "_r"); do
         done
         wait
 
-        rm $RESULT_LOC/*.out
+        rm -f $RESULT_LOC/*.out
     done
     cd ../../..
 done
