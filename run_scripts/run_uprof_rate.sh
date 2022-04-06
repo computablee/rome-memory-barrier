@@ -9,7 +9,19 @@ export LD_LIBRARY_PATH="/opt/aocc-compiler-3.1.0/lib:/opt/aocc-compiler-3.1.0/li
 export LIBRARY_PATH="/opt/aocc-compiler-3.1.0/lib:/opt/aocc-compiler-3.1.0/lib32:/opt/intel/oneapi/vpl/2021.4.0/lib:/opt/intel/oneapi/tbb/2021.3.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.3.0//libfabric/lib:/opt/intel/oneapi/mpi/2021.3.0//lib/release:/opt/intel/oneapi/mpi/2021.3.0//lib:/opt/intel/oneapi/mkl/2021.3.0/lib/intel64:/opt/intel/oneapi/ipp/2021.3.0/lib/intel64:/opt/intel/oneapi/ippcp/2021.3.0/lib/intel64:/opt/intel/oneapi/ipp/2021.3.0/lib/intel64:/opt/intel/oneapi/dnnl/2021.3.0/cpu_dpcpp_gpu_dpcpp/lib:/opt/intel/oneapi/dal/2021.3.0/lib/intel64:/opt/intel/oneapi/compiler/2021.3.0/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/compiler/2021.3.0/linux/lib:/opt/intel/oneapi/clck/2021.3.0/lib/intel64:/opt/intel/oneapi/ccl/2021.3.0/lib/cpu_gpu_dpcpp:/usr/lib64:/usr/local/cuda/lib64:/opt/aocc-compiler-3.1.0/lib/:"
 
 #issues running:
-#cant find libomp.so
+# 508
+# 510
+# 511
+# 520
+# 521
+# 523
+# 526
+# 527
+# 531
+# 541
+# 548
+# 549
+# 554
 
 cd /home/student/pal0009/CPE-631-Term-Project/benchspec/CPU
 
@@ -142,7 +154,7 @@ function run_benchmark {
     fi
 }
 
-for i in $(ls -1 | grep "_r"); do
+for i in $(ls -1 | grep "508"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
     cd $RUN_DIR
     for j in 48 ; do
