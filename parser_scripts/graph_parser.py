@@ -22,7 +22,8 @@ def main():
     home = os.getcwd()
 
     verifyDirectoriesNeededExist()
-    
+    attachHeaders()
+
     os.chdir(home)
 
     cwd = os.getcwd()+"/uprof_results"
@@ -101,6 +102,14 @@ def parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark):
         writeToSuiteMetricSpecificCSV(pipelineUtil, (os.getcwd()+"/graph_data/fp_speed"+"/pipelineUtil.csv"))
         writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/fp_speed"+"/cpiDF.csv"))
 
+def attachHeadersCSVs(headers, filename):
+    #make sure csv exists for appending
+    Path(filename).touch()
+
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+
 def writeToSuiteMetricSpecificCSV(data, filename):
     #make sure csv exists for appending
     Path(filename).touch()
@@ -143,13 +152,13 @@ def verifyDirectoriesNeededExist():
     directory = os.getcwd()+"/graph_data"
     if (not (os.path.exists(directory))):
         os.makedirs(directory)
-
     os.chdir(directory)
 
     #create /graph_data/int_speed directory is doesn't exist
     subdir1 = os.getcwd()+"/int_speed"
     if (not (os.path.exists(subdir1))):
         os.mkdir(subdir1)
+    
 
     #create /graph_data/int_rate directory is doesn't exist
     subdir2 = os.getcwd()+"/int_rate"
@@ -166,6 +175,25 @@ def verifyDirectoriesNeededExist():
     if (not (os.path.exists(subdir4))):
         os.mkdir(subdir4)
     
+
+def attachHeaders():
+    ipcHeaders = ['Benchmark', 'IPC']
+    pipeUtilHeaders = ['Benchmark', 'Pipeline Utilization']
+    cpiDFHeaders = ['Benchmark', 'CPI', 'DF']
+    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/int_rate"+"/ipc.csv"))
+    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/int_speed"+"/ipc.csv"))
+    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/ipc.csv"))
+    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/ipc.csv"))
+
+    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/int_rate"+"/pipelineUtil.csv"))
+    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/int_speed"+"/pipelineUtil.csv"))
+    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/pipelineUtil.csv"))
+    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/pipelineUtil.csv"))
+
+    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/int_rate"+"/cpiDF.csv"))
+    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/int_speed"+"/cpiDF.csv"))
+    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/cpiDF.csv"))
+    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/cpiDF.csv"))
 
 # Call to invoke main method to begin program.
 if __name__ == "__main__":
