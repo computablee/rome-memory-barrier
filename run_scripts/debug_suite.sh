@@ -11,6 +11,6 @@ export CFFILE=aocc-3.1.0-linux.cfg
 export ROOTDIR=/apps/arch/cpu2017
 export CONFIG=$ROOTDIR/config/$CFFILE
 export RUNCPU=$ROOTDIR/bin/runcpu
-export BUILD="all"
+export BUILD="$1"
 
-$RUNCPU --action=build --config=$CONFIG $BUILD
+$RUNCPU --config=$CONFIG $BUILD
