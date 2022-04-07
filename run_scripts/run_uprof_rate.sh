@@ -7,10 +7,6 @@ ulimit -s unlimited
 source /opt/setenv_AOCC.sh
 source /opt/intel/oneapi/setvars.sh
 #issues running:
-# 510
-# 511
-# 520
-# 521
 # 523
 # 526
 # 527
@@ -105,15 +101,7 @@ function run_benchmark {
     local rundir=$4
 
     echo "instance $instance"
-    local benchname=$(cut -d '.' -f2- <<< $benchmark)
-
-    #printf './%s_base.aocc-3.3.1.0-m64 %s > %s/%s.out 2>> %s/%s.err\n' \
-    #    $benchname \
-    #    "$(flags $benchname)" \
-    #    $outloc \
-    #    $instance \
-    #    $outloc \
-    #    $instance   
+    local benchname=$(cut -d '.' -f2- <<< $benchmark) 
 
     let core=$instance-1
 
@@ -127,7 +115,6 @@ function run_benchmark {
         export UPROF=""
     fi
 
-    echo $(pwd)
     #benchmarks with different names for the executable than the folder
     if [ $benchname = "gcc_r" ] ; then
         echo "detected gcc, running on core $core"
@@ -154,6 +141,23 @@ function run_benchmark {
 
 for i in $(ls -1 | grep "$1"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
+
+    cd /home/student/pal0009/CPE-631-Term-Project/run_scripts
+    ./debug_suite.sh $i &
+    sleep 30
+    export bname=$(cut -d '.' -f2- <<< $i)
+    if [ $bname = "gcc_r" ] ; then
+        export bname="cpugcc_r"
+    elif [ $bname = "xalancbmk_r" ] ; then
+        export bname="cpuxalan_r"
+    elif [ $bname = "cactuBSSN_r" ] ; then
+        export bname="cactusBSSN_r"
+    fi
+    pkill $bname\*
+    pkill AMDuProfPcm
+
+    sleep 5
+
     cd $RUN_DIR
     for j in 48 ; do
         export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/uprof_results/$i
