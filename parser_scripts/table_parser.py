@@ -19,12 +19,9 @@ fpRate = ['503.bwaves_r', '507.cactuBSSN_r', '508.namd_r', '510.parest_r', '511.
 def main():
     os.chdir("..")
 
-    home = os.getcwd()
-
     verifyDirectoriesNeededExist()
     attachHeaders()
-
-    os.chdir(home)
+    
 
     cwd = os.getcwd()+"/uprof_results"
     dirList = os.listdir(cwd)
@@ -35,7 +32,6 @@ def main():
     dirList.remove('998.specrand_is')
     dirList.remove('999.specrand_ir')
     dirList.remove('996.specrand_fs')
-    
 
     #Check if any benchmark directories are missing, if any are print them
     benchmarks_total = intSpeed+intRate+fpSpeed+fpRate
@@ -49,10 +45,9 @@ def main():
     #Create CSV for graphing by suite
     for benchmark in dirList:
         inputEvents = os.getcwd()+'/uprof_results_cumulative/'+benchmark+"/events.csv"
-        inputMetrics = os.getcwd()+'/uprof_results_cumulative/'+benchmark+"/metrics.csv"
-        parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark)
+        parseCSVsForGraphCSVs(inputEvents, benchmark)
 
-def parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark):
+def parseCSVsForGraphCSVs(inputEvents, benchmark):
     events = []
     metrics = []
 
@@ -70,42 +65,24 @@ def parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark):
         for row in reader:
             events.append(row)
 
-    #read in metrics data
-    with open(inputMetrics, 'r') as file:
-        reader = csv.reader(file)
-
-        #skip column headers
-        next(reader)
-
-        for row in reader:
-            metrics.append(row)
-
-    ipc = processCSVsIPC(events, benchmark)
-    pipelineUtil = processCSVsPipelineUtilization(events, benchmark)
-    cpiDF = processCSVsCPIDF(events, metrics, benchmark)
+    genParams = processCSVsGenParams(events, benchmark)
+    cacheBreak = processCSVsCacheBreakdown(events, benchmark)
 
     #check which suite this benchmark belongs to
     if (intRate.count(benchmark) > 0):
-        writeToSuiteMetricSpecificCSV(ipc, (os.getcwd()+"/graph_data/int_rate"+"/ipc.csv"))
-        writeToSuiteMetricSpecificCSV(pipelineUtil, (os.getcwd()+"/graph_data/int_rate"+"/pipelineUtil.csv"))
-        writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/int_rate"+"/cpiDF.csv"))
+        writeToSuiteMetricSpecificCSV(genParams, (os.getcwd()+"/graph_data/int_rate"+"/general_parameters.csv"))
+        writeToSuiteMetricSpecificCSV(cacheBreak, (os.getcwd()+"/graph_data/int_rate"+"/cache_breakdown.csv"))
     elif (intSpeed.count(benchmark) > 0):
-        writeToSuiteMetricSpecificCSV(ipc, (os.getcwd()+"/graph_data/int_speed"+"/ipc.csv"))
-        writeToSuiteMetricSpecificCSV(pipelineUtil, (os.getcwd()+"/graph_data/int_speed"+"/pipelineUtil.csv"))
-        writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/int_speed"+"/cpiDF.csv"))
+        writeToSuiteMetricSpecificCSV(genParams, (os.getcwd()+"/graph_data/int_speed"+"/general_parameters.csv"))
+        writeToSuiteMetricSpecificCSV(cacheBreak, (os.getcwd()+"/graph_data/int_speed"+"/cache_breakdown.csv"))
     elif (fpRate.count(benchmark) > 0):
-        writeToSuiteMetricSpecificCSV(ipc, (os.getcwd()+"/graph_data/fp_rate"+"/ipc.csv"))
-        writeToSuiteMetricSpecificCSV(pipelineUtil, (os.getcwd()+"/graph_data/fp_rate"+"/pipelineUtil.csv"))
-        writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/fp_rate"+"/cpiDF.csv"))
+        writeToSuiteMetricSpecificCSV(genParams, (os.getcwd()+"/graph_data/fp_rate"+"/general_parameters.csv"))
+        writeToSuiteMetricSpecificCSV(cacheBreak, (os.getcwd()+"/graph_data/fp_rate"+"/cache_breakdown.csv"))
     elif (fpSpeed.count(benchmark) > 0):
-        writeToSuiteMetricSpecificCSV(ipc, (os.getcwd()+"/graph_data/fp_speed"+"/ipc.csv"))
-        writeToSuiteMetricSpecificCSV(pipelineUtil, (os.getcwd()+"/graph_data/fp_speed"+"/pipelineUtil.csv"))
-        writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/fp_speed"+"/cpiDF.csv"))
+        writeToSuiteMetricSpecificCSV(genParams, (os.getcwd()+"/graph_data/fp_speed"+"/general_parameters.csv"))
+        writeToSuiteMetricSpecificCSV(cacheBreak, (os.getcwd()+"/graph_data/fp_speed"+"/cache_breakdown.csv"))
 
 def attachHeadersCSVs(headers, filename):
-    #make sure csv exists for appending
-    Path(filename).touch()
-
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(headers)
@@ -118,36 +95,47 @@ def writeToSuiteMetricSpecificCSV(data, filename):
         writer = csv.writer(csvfile)
         writer.writerow(data)
 
-def processCSVsIPC(events, benchmark):
-    ipc = round((float(events[4][1])/float(events[3][1])),2)
+def processCSVsGenParams(events, benchmark):
+    cycles = float(float(events[3][1])/1000000000)
+    instr = float(float(events[4][1])/1000000000)
+    branches = float(float(events[5][1])/1000000000)
+    loads = float(float(events[6][1])/1000000000)
+    stores = float(float(events[7][1])/1000000000)
+    ipc = round((float(instr/cycles)),2)
+    
     row = []
     row.append(benchmark)
+    row.append(str(cycles))
+    row.append(str(instr))
+    row.append(str(branches))
+    row.append(str(loads))
+    row.append(str(stores))
     row.append(str(ipc))
 
     return row
 
 
-def processCSVsPipelineUtilization(events, benchmark):
-    #pipeline util (%) = RetdInst/CpuCycles/8*100
-    pipelineUtil = round(((float(events[4][1])/float(events[3][1]))/8*100), 2)
+def processCSVsCacheBreakdown(events, benchmark):
+    l2Access = float(float(events[11][1])+float(events[12][1])/1000)
+    l2Miss = float(float(events[17][1])+float(events[18][1])/1000)
+    l2MissRate = round((float(l2Miss/l2Access)*100),2)
+    l3Access = float(float(events[24][1])/1000)
+    l3Miss = float(float(events[25][1])/1000)
+    l3MissRate = round((float(l3Miss/l3Access)*100),2)
     row = []
     row.append(benchmark)
-    row.append(str(pipelineUtil))
-
-    return row
-
-def processCSVsCPIDF(events, metrics, benchmark):
-    cpi = round((float(events[3][1])/float(events[4][1])),2)
-    # had to get this data from metrics due to internal variable involved in calculation
-    totalMemBWGBpS = float(metrics[22][1])
-    row = []
-    row.append(benchmark)
-    row.append(str(cpi))
-    row.append(str(totalMemBWGBpS))
+    row.append(str(l2Access))
+    row.append(str(l2Miss))
+    row.append(str(l2MissRate))
+    row.append(str(l3Access))
+    row.append(str(l3Miss))
+    row.append(str(l3MissRate))
 
     return row
 
 def verifyDirectoriesNeededExist():
+    home = os.getcwd()
+
     #create /graph_data directory is doesn't exist
     directory = os.getcwd()+"/graph_data"
     if (not (os.path.exists(directory))):
@@ -175,25 +163,20 @@ def verifyDirectoriesNeededExist():
     if (not (os.path.exists(subdir4))):
         os.mkdir(subdir4)
     
-
+    os.chdir(home)
+    
 def attachHeaders():
-    ipcHeaders = ['Benchmark', 'IPC']
-    pipeUtilHeaders = ['Benchmark', 'Pipeline Utilization']
-    cpiDFHeaders = ['Benchmark', 'CPI', 'DF']
-    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/int_rate"+"/ipc.csv"))
-    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/int_speed"+"/ipc.csv"))
-    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/ipc.csv"))
-    attachHeadersCSVs(ipcHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/ipc.csv"))
+    genParamHeaders = ['Benchmark', 'Cycles [Billions]', 'Instr. [Billions]', 'Branches [Billions]', 'Loads [Billions]', 'Stores [Billions]', 'IPC']
+    cacheBreakHeaders = ['Benchmark','L2 Access Per 1K Instr.', 'L2 Miss Per 1K Instr.', 'L2 Miss Rate (%)', 'L3 Access Per 1K Instr.', 'L3 Miss Per 1K Instr.', 'L3 Miss Rate (%)']
+    attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/int_rate"+"/general_parameters.csv"))
+    attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/int_speed"+"/general_parameters.csv"))
+    attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/general_parameters.csv"))
+    attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/general_parameters.csv"))
 
-    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/int_rate"+"/pipelineUtil.csv"))
-    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/int_speed"+"/pipelineUtil.csv"))
-    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/pipelineUtil.csv"))
-    attachHeadersCSVs(pipeUtilHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/pipelineUtil.csv"))
-
-    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/int_rate"+"/cpiDF.csv"))
-    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/int_speed"+"/cpiDF.csv"))
-    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/cpiDF.csv"))
-    attachHeadersCSVs(cpiDFHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/cpiDF.csv"))
+    attachHeadersCSVs(cacheBreakHeaders, (os.getcwd()+"/graph_data/int_rate"+"/cache_breakdown.csv"))
+    attachHeadersCSVs(cacheBreakHeaders, (os.getcwd()+"/graph_data/int_speed"+"/cache_breakdown.csv"))
+    attachHeadersCSVs(cacheBreakHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/cache_breakdown.csv"))
+    attachHeadersCSVs(cacheBreakHeaders, (os.getcwd()+"/graph_data/fp_speed"+"/cache_breakdown.csv"))
 
 # Call to invoke main method to begin program.
 if __name__ == "__main__":

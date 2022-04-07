@@ -43,32 +43,18 @@ def main():
         for entry in list_difference:
             print(entry)
 
-    serial = intRate+intSpeed+fpRate
-    parallel = fpSpeed
-
     #Parse Serial benchmarks
-    for benchmark in serial:
+    for benchmark in dirList:
         inputFile = cwd+'/'+benchmark+"/events.csv"
         outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
         if (not (os.path.exists(outputDir))):
             os.makedirs(outputDir)
         outputFile = outputDir+"/events.csv"
-        processCSVFile(inputFile, outputFile, True)
+        processCSVFile(inputFile, outputFile)
 
-    #Parse Parallel benchmarks
-    for benchmark in parallel:
-        inputFile = cwd+'/'+benchmark+"/events.csv"
-        outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
-        if (not (os.path.exists(outputDir))):
-            os.makedirs(outputDir)
-        outputFile = outputDir+"/events.csv"
-        processCSVFile(inputFile, outputFile, False)
-
-def processCSVFile(inputFile, outputFile, s):
+def processCSVFile(inputFile, outputFile):
     #entire csv file read into data easier to handle odd csv spacing of data
     data = []
-
-    serial = s
 
     coreMetrics = []
     ccxMetrics = []
@@ -83,11 +69,11 @@ def processCSVFile(inputFile, outputFile, s):
         for row in reader:
             data.append(row)
     
-    coreMetrics = processCoreMetrics(data, serial)
-    ccxMetrics = processCCXMetrics(data, serial)
-    pkgMetrics = processPKGMetrics(data, serial)
+    coreMetrics = processCoreMetrics(data)
+    ccxMetrics = processCCXMetrics(data)
+    pkgMetrics = processPKGMetrics(data)
 
-    #write results to new 'cumulativeMetrics.csv' file
+    #write results to new 'metrics.csv' file
     rows = []
     for i in range(len(coreMetrics)):
         rows.append(coreMetrics[i])
@@ -102,81 +88,57 @@ def processCSVFile(inputFile, outputFile, s):
         writer.writerow(fields)
         writer.writerows(rows)
 
-def processCoreMetrics(data, serial):
+def processCoreMetrics(data):
     headers = []
     core = []
 
     for i in range(22):
         headers.append(data[0][i])
 
-    #if serial only process CORE-0
-    if (serial):
-        for i in range(22):
-            row = []
-            row.append(headers[i])
-            row.append(data[1][i])
-            core.append(row)
-    else:
-        for i in range(22):
-            sum = 0
-            row = []
-            for j in range(0+i,1035+i,22):
-                sum = sum + float(data[1][j])
-            row.append(headers[i])
-            row.append(sum)
-            core.append(row)
+    for i in range(22):
+        sum = 0
+        row = []
+        for j in range(0+i,1035+i,22):
+            sum = sum + float(data[1][j])
+        row.append(headers[i])
+        row.append(sum)
+        core.append(row)
 
     return core
 
-def processCCXMetrics(data, serial):
+def processCCXMetrics(data):
     headers = []
     ccx = []
 
     for i in range(1056,1062):
         headers.append(data[0][i])
 
-    #if serial only process CCX-0
-    if (serial):
-        for i in range(1056,1062):
-            row = []
-            row.append(headers[i-1056])
-            row.append(data[1][i])
-            ccx.append(row)
-    else:
-        for i in range(6):
-            sum = 0
-            row = []
-            for j in range(1056+i,1151+i,6):
-                sum = sum + float(data[1][j])
-            row.append(headers[i])
-            row.append(sum)
-            ccx.append(row)
+    for i in range(6):
+        sum = 0
+        row = []
+        for j in range(1056+i,1151+i,6):
+            sum = sum + float(data[1][j])
+        row.append(headers[i])
+        row.append(sum)
+        ccx.append(row)
 
     return ccx
 
-def processPKGMetrics(data, serial):
+def processPKGMetrics(data):
     headers = []
     pkg = []
 
     for i in range(1152,1169):
         headers.append(data[0][i])
 
-    #if serial only process PKG-0
-    if (serial):
-        for i in range (1152,1169):
-            row = []
-            row.append(headers[i-1152])
-            row.append(data[1][i])
-            pkg.append(row)
-    else:
-        for i in range (17):
-            sum = 0
-            row = []
-            for j in range(1152+i,1186+i,17):
-                sum = sum + float(data[1][j])
-            row.append(headers[i])
-            row.append(sum)
-            pkg.append(row)
+    for i in range (17):
+        sum = 0
+        row = []
+        for j in range(1152+i,1186+i,17):
+            sum = sum + float(data[1][j])
+        row.append(headers[i])
+        row.append(sum)
+        pkg.append(row)
 
     return pkg
 

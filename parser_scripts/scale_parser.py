@@ -32,7 +32,7 @@ def main():
     outputFP = os.getcwd()+"/graph_data/fp_scalability.csv"
 
     cwd = os.getcwd()+"/scale_results"
-    benchmarkDirList = os.listdir(cwd)
+    benchmarkDirList = sorted(os.listdir(cwd))
     benchmarkDirList.remove('.placeholder') #remove non-benchmark entry
     benchmarkDirList.remove('520.omnetpp_r_1')
 
@@ -49,6 +49,7 @@ def main():
     #get int and fp avg and max data into their own lists
     for benchmark in sorted_dirs:
         count = 0
+        print(benchmark)
         for benchmarkScale in benchmark:
             benchmarkName = benchmarkScale[:benchmarkScale.index("_r")+len("_r")]
             timeDirList = os.listdir(cwd+"/"+benchmarkScale)
@@ -57,7 +58,6 @@ def main():
             if (count%5 == 0):
                 rowA = []
                 rowM = []
-
             for time in timeDirList:
                 file = cwd+"/"+benchmarkScale+"/"+time
                 with open(file, "r") as f:

@@ -9,7 +9,10 @@ python3 metrics_parser.py
 echo "*******************Verifying Parsed Data**********************"
 python3 verify_parser.py
 
-echo "**********Creating Events/Metrics CSVs for Graphing***********"
+echo "****************Creating CSVs for Graphing********************"
+python3 graph_parser.py
+
+echo "*****************Creating CSVs for Tables*********************"
 python3 graph_parser.py
 
 echo "***********Creating Scalability CSVs for Graphing*************"
