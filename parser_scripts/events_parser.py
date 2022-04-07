@@ -10,6 +10,11 @@ fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '628.pop
 fpRate = ['503.bwaves_r', '507.cactuBSSN_r', '508.namd_r', '510.parest_r', '511.povray_r',
           '519.lbm_r', '521.wrf_r', '526.blender_r', '527.cam4_r', '538.imagick_r', '544.nab_r',
           '549.fotonik3d_r', '554.roms_r']
+fpIntSpeedSerial = ['600.perlbench_s',  '602.gcc_s', '605.mcf_s', '620.omnetpp_s', '623.xalancbmk_s',
+            '625.x264_s', '631.deepsjeng_s', '641.leela_s', '648.exchange2_s']
+fpIntSpeedParallel = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '628.pop2_s',
+           '638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s', '657.xz_s']
+
 
 # ADD 627.cam4_s back in if available!
 #fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '627.cam4_s', '628.pop2_s',
@@ -43,18 +48,32 @@ def main():
         for entry in list_difference:
             print(entry)
 
+    serial = intRate+fpRate+fpIntSpeedSerial
+    parallel = fpIntSpeedParallel
+
     #Parse Serial benchmarks
-    for benchmark in dirList:
+    for benchmark in serial:
         inputFile = cwd+'/'+benchmark+"/events.csv"
         outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
         if (not (os.path.exists(outputDir))):
             os.makedirs(outputDir)
         outputFile = outputDir+"/events.csv"
-        processCSVFile(inputFile, outputFile)
+        processCSVFile(inputFile, outputFile, True)
 
-def processCSVFile(inputFile, outputFile):
+    #Parse Parallel benchmarks
+    for benchmark in parallel:
+        inputFile = cwd+'/'+benchmark+"/events.csv"
+        outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
+        if (not (os.path.exists(outputDir))):
+            os.makedirs(outputDir)
+        outputFile = outputDir+"/events.csv"
+        processCSVFile(inputFile, outputFile, False)
+
+def processCSVFile(inputFile, outputFile, s):
     #entire csv file read into data easier to handle odd csv spacing of data
     data = []
+
+    serial = s
 
     coreMetrics = []
     ccxMetrics = []
@@ -69,11 +88,11 @@ def processCSVFile(inputFile, outputFile):
         for row in reader:
             data.append(row)
     
-    coreMetrics = processCoreMetrics(data)
-    ccxMetrics = processCCXMetrics(data)
-    pkgMetrics = processPKGMetrics(data)
+    coreMetrics = processCoreMetrics(data, serial)
+    ccxMetrics = processCCXMetrics(data, serial)
+    pkgMetrics = processPKGMetrics(data, serial)
 
-    #write results to new 'metrics.csv' file
+    #write results to new 'cumulativeMetrics.csv' file
     rows = []
     for i in range(len(coreMetrics)):
         rows.append(coreMetrics[i])
@@ -88,57 +107,81 @@ def processCSVFile(inputFile, outputFile):
         writer.writerow(fields)
         writer.writerows(rows)
 
-def processCoreMetrics(data):
+def processCoreMetrics(data, serial):
     headers = []
     core = []
 
     for i in range(22):
         headers.append(data[0][i])
 
-    for i in range(22):
-        sum = 0
-        row = []
-        for j in range(0+i,1035+i,22):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        core.append(row)
+    #if serial only process CORE-0
+    if (serial):
+        for i in range(22):
+            row = []
+            row.append(headers[i])
+            row.append(data[1][i])
+            core.append(row)
+    else:
+        for i in range(22):
+            sum = 0
+            row = []
+            for j in range(0+i,1035+i,22):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            core.append(row)
 
     return core
 
-def processCCXMetrics(data):
+def processCCXMetrics(data, serial):
     headers = []
     ccx = []
 
     for i in range(1056,1062):
         headers.append(data[0][i])
 
-    for i in range(6):
-        sum = 0
-        row = []
-        for j in range(1056+i,1151+i,6):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        ccx.append(row)
+    #if serial only process CCX-0
+    if (serial):
+        for i in range(1056,1062):
+            row = []
+            row.append(headers[i-1056])
+            row.append(data[1][i])
+            ccx.append(row)
+    else:
+        for i in range(6):
+            sum = 0
+            row = []
+            for j in range(1056+i,1151+i,6):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            ccx.append(row)
 
     return ccx
 
-def processPKGMetrics(data):
+def processPKGMetrics(data, serial):
     headers = []
     pkg = []
 
     for i in range(1152,1169):
         headers.append(data[0][i])
 
-    for i in range (17):
-        sum = 0
-        row = []
-        for j in range(1152+i,1186+i,17):
-            sum = sum + float(data[1][j])
-        row.append(headers[i])
-        row.append(sum)
-        pkg.append(row)
+    #if serial only process PKG-0
+    if (serial):
+        for i in range (1152,1169):
+            row = []
+            row.append(headers[i-1152])
+            row.append(data[1][i])
+            pkg.append(row)
+    else:
+        for i in range (17):
+            sum = 0
+            row = []
+            for j in range(1152+i,1186+i,17):
+                sum = sum + float(data[1][j])
+            row.append(headers[i])
+            row.append(sum)
+            pkg.append(row)
 
     return pkg
 

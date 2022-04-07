@@ -10,7 +10,10 @@ fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '628.pop
 fpRate = ['503.bwaves_r', '507.cactuBSSN_r', '508.namd_r', '510.parest_r', '511.povray_r',
           '519.lbm_r', '521.wrf_r', '526.blender_r', '527.cam4_r', '538.imagick_r', '544.nab_r',
           '549.fotonik3d_r', '554.roms_r']
-
+fpIntSpeedSerial = ['600.perlbench_s',  '602.gcc_s', '605.mcf_s', '620.omnetpp_s', '623.xalancbmk_s',
+            '625.x264_s', '631.deepsjeng_s', '641.leela_s', '648.exchange2_s']
+fpIntSpeedParallel = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '628.pop2_s',
+           '638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s', '657.xz_s']
 # ADD 627.cam4_s back in if available!
 #fpSpeed = ['603.bwaves_s', '607.cactuBSSN_s', '619.lbm_s', '621.wrf_s', '627.cam4_s', '628.pop2_s',
            #'638.imagick_s', '644.nab_s','649.fotonik3d_s', '654.roms_s']
@@ -43,19 +46,34 @@ def main():
         for entry in list_difference:
             print(entry)
 
+    serial = intRate+fpRate+fpIntSpeedSerial
+    parallel = fpIntSpeedParallel
+
     #Parse Serial benchmarks
-    for benchmark in dirList:
+    for benchmark in serial:
         inputFile = cwd+'/'+benchmark+"/metrics.csv"
         outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
         if (not (os.path.exists(outputDir))):
             os.makedirs(outputDir)
         outputFile = outputDir+"/metrics.csv"
-        processCSVFile(inputFile, outputFile)
+        processCSVFile(inputFile, outputFile, True)
+
+    #Parse Parallel benchmarks
+    for benchmark in parallel:
+        inputFile = cwd+'/'+benchmark+"/metrics.csv"
+        outputDir = os.getcwd()+'/uprof_results_cumulative/'+benchmark
+        if (not (os.path.exists(outputDir))):
+            os.makedirs(outputDir)
+        outputFile = outputDir+"/metrics.csv"
+        processCSVFile(inputFile, outputFile, False)
     
 
-def processCSVFile(inputFile, outputFile):
+def processCSVFile(inputFile, outputFile, s):
     #entire csv file read into data easier to handle odd csv spacing of data
     data = []
+
+    #boolean for serial or parallel
+    serial = s
 
     coreMetrics = []
     l3Metrics = []
@@ -71,9 +89,9 @@ def processCSVFile(inputFile, outputFile):
             data.append(row)
 
     #PROCESS METRICS
-    coreMetrics = processCoreMetrics(data)
-    l3Metrics = processL3Metrics(data)
-    dfMetrics = processDFMetrics(data)
+    coreMetrics = processCoreMetrics(data, serial)
+    l3Metrics = processL3Metrics(data, serial)
+    dfMetrics = processDFMetrics(data, serial)
 
     #write results to new file
     rows = []
@@ -92,7 +110,7 @@ def processCSVFile(inputFile, outputFile):
     
 
 #This function processes the core metrics of one 'metrics.csv' file
-def processCoreMetrics(data):
+def processCoreMetrics(data, serial):
     headers =[]
     metrics = []
     core = []
@@ -102,22 +120,30 @@ def processCoreMetrics(data):
         del data[i][0] #get rid of metric header from that row
         metrics.append(data[i])
     
-    #avg everything
-    for i in range(len(metrics)):
-        row = []
-        row.append(headers[i])
-        sum = 0
-        avg = 0
-        for j in range(48):
-            sum = sum + float(metrics[i][j])
-        avg = sum/len(metrics[0])
-        row.append(avg)
-        core.append(row)
+    #if serial only grab Core-0 data
+    if (serial):
+        for i in range(17):
+            row = []
+            row.append(headers[i])
+            row.append(metrics[i][0])
+            core.append(row)     
+    else: 
+        #avg everything
+        for i in range(len(metrics)):
+            row = []
+            row.append(headers[i])
+            sum = 0
+            avg = 0
+            for j in range(48):
+                sum = sum + float(metrics[i][j])
+            avg = sum/len(metrics[0])
+            row.append(avg)
+            core.append(row)
 
     return core
 
 #This function processes the L3 metrics of one 'metrics.csv' file
-def processL3Metrics(data):
+def processL3Metrics(data, serial):
     headers =[]
     metrics = []
     l3 = []
@@ -127,32 +153,40 @@ def processL3Metrics(data):
         del data[i][0] #get rid of metric header from that row
         metrics.append(data[i])
 
-    # sum the accesses and misses
-    for i in range(2):
-        sum = 0
-        row = []
-        for j in range(16):
-            sum = sum + float(metrics[i][j])
-        row.append(headers[i])
-        row.append(sum)
-        l3.append(row)
+    #if serial only grab CCX-0 data
+    if (serial):
+        for i in range(5):
+            row = []
+            row.append(headers[i])
+            row.append(metrics[i][0])
+            l3.append(row)
+    else:
+        # sum the accesses and misses
+        for i in range(2):
+            sum = 0
+            row = []
+            for j in range(16):
+                sum = sum + float(metrics[i][j])
+            row.append(headers[i])
+            row.append(sum)
+            l3.append(row)
 
-    # avg the hit rate, miss rate, and miss latency
-    for i in range(2,5):
-        sum = 0
-        avg = 0
-        row = []
-        for j in range(16):
-            sum = sum + float(metrics[i][j])
-        avg = sum/len(metrics[0])
-        row.append(headers[i])
-        row.append(avg)
-        l3.append(row)
+        # avg the hit rate, miss rate, and miss latency
+        for i in range(2,5):
+            sum = 0
+            avg = 0
+            row = []
+            for j in range(16):
+                sum = sum + float(metrics[i][j])
+            avg = sum/len(metrics[0])
+            row.append(headers[i])
+            row.append(avg)
+            l3.append(row)
 
     return l3
 
 #This function processes the DF metrics of one 'metrics.csv' file
-def processDFMetrics(data):
+def processDFMetrics(data, serial):
     headers =[]
     metrics = []
     df = []
@@ -162,14 +196,22 @@ def processDFMetrics(data):
         del data[i][0] #get rid of metric header from that row
         metrics.append(data[i])
 
-    for i in range(len(metrics)):
-        sum = 0
-        row = []
-        for j in range(2):
-            sum = sum + float(metrics[i][j])
-        row.append(headers[i])
-        row.append(sum)
-        df.append(row)
+    #if serial only grab CCX-0 data
+    if (serial):
+        for i in range(len(metrics)):
+            row = []
+            row.append(headers[i])
+            row.append(metrics[i][0])
+            df.append(row)
+    else:
+        for i in range(len(metrics)):
+            sum = 0
+            row = []
+            for j in range(2):
+                sum = sum + float(metrics[i][j])
+            row.append(headers[i])
+            row.append(sum)
+            df.append(row)
 
     return df
 
