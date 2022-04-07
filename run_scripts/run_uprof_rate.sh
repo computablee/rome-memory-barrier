@@ -7,8 +7,6 @@ ulimit -s unlimited
 source /opt/setenv_AOCC.sh
 source /opt/intel/oneapi/setvars.sh
 #issues running:
-# 523
-# 526
 # 527
 # 531
 # 541
