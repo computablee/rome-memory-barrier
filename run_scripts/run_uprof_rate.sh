@@ -6,13 +6,6 @@ ulimit -s unlimited
 #export OMP_SCHEDULE=static
 source /opt/setenv_AOCC.sh
 source /opt/intel/oneapi/setvars.sh
-#issues running:
-# 527
-# 531
-# 541
-# 548
-# 549
-# 554
 
 cd /home/student/pal0009/CPE-631-Term-Project/benchspec/CPU
 
@@ -137,7 +130,7 @@ function run_benchmark {
     fi
 }
 
-for i in $(ls -1 | grep "$1"); do
+for i in $(ls -1 | grep "_r"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
 
     cd /home/student/pal0009/CPE-631-Term-Project/run_scripts
