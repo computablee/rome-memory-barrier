@@ -6,10 +6,8 @@ ulimit -s unlimited
 #export OMP_SCHEDULE=static
 source /opt/setenv_AOCC.sh
 source /opt/intel/oneapi/setvars.sh
-
-export OMP_NUM_THREADS=1
-export OMP_THREAD_LIMIT=1
 #issues running:
+# 510
 # 511
 # 520
 # 521
@@ -129,39 +127,35 @@ function run_benchmark {
         export UPROF=""
     fi
 
-    local old=$(pwd)
-    cd $rundir
-
+    echo $(pwd)
     #benchmarks with different names for the executable than the folder
     if [ $benchname = "gcc_r" ] ; then
         echo "detected gcc, running on core $core"
-        $UPROF $CORE_PIN ./cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "xalancbmk_r" ] ; then
         echo "detected xalancbmk, running on core $core"
-        $UPROF $CORE_PIN ./cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > /dev/null 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > /dev/null 2>> $outloc/$instance.err &
     elif [ $benchname = "cactuBSSN_r" ] ; then
         echo "detected cactuBSSN, running on core $core"
-        $UPROF $CORE_PIN ./cactusBSSN_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/cactusBSSN_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     #benchmarks that use bash tokens in the parameters
     elif [ $benchname = "bwaves_r" ] ; then
         echo "detected bwaves, running on core $core"
-        $UPROF $CORE_PIN ./$benchname\_base.aocc-3-3.1.0-m64 bwaves_1 < bwaves_1.in > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 bwaves_1 < bwaves_1.in > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "roms_r" ] ; then
         echo "detected roms, running on core $core"
-        $UPROF $CORE_PIN ./$benchname\_base.aocc-3-3.1.0-m64 < ocean_benchmark2.in.x > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 < ocean_benchmark2.in.x > $outloc/$instance.out 2>> $outloc/$instance.err &
     #everything else
     else
         echo "running on core $core"
-        $UPROF $CORE_PIN ./$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/$benchname\_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     fi
-
-    cd $old
 }
 
 for i in $(ls -1 | grep "$1"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
     cd $RUN_DIR
-    for j in 1 ; do
+    for j in 48 ; do
         export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/uprof_results/$i
         rm -rf $RESULT_LOC
         mkdir $RESULT_LOC
