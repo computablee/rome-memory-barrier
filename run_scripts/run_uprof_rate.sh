@@ -1,9 +1,18 @@
 #!/bin/bash
 
 ulimit -s unlimited
-export OMP_STACKSIZE=192M
-export OMP_NUM_THREADS=1
-export OMP_SCHEDULE=static
+#export OMP_STACKSIZE=192M
+#export OMP_NUM_THREADS=1
+#export OMP_SCHEDULE=static
+source /opt/setenv_AOCC.sh
+source /opt/intel/oneapi/setvars.sh
+#issues running:
+# 527
+# 531
+# 541
+# 548
+# 549
+# 554
 
 cd /home/student/pal0009/CPE-631-Term-Project/benchspec/CPU
 
@@ -90,22 +99,16 @@ function run_benchmark {
     local rundir=$4
 
     echo "instance $instance"
-    local benchname=$(cut -d '.' -f2- <<< $benchmark)
-
-    #printf './%s_base.aocc-3.3.1.0-m64 %s > %s/%s.out 2>> %s/%s.err\n' \
-    #    $benchname \
-    #    "$(flags $benchname)" \
-    #    $outloc \
-    #    $instance \
-    #    $outloc \
-    #    $instance   
+    local benchname=$(cut -d '.' -f2- <<< $benchmark) 
 
     let core=$instance-1
 
     export CORE_PIN="taskset -c $core"
 
     if [ $core = 0 ]; then
-        export UPROF="rm -rf /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark ; mkdir /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark ; AMDuProfPcm -r -i /home/student/pal0009/CPE-631-Term-Project/spec-config.conf -a -C -D /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark/events.csv -o /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark/metrics.csv -- "
+        rm -rf /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark
+        mkdir /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark
+        export UPROF="AMDuProfPcm -r -i /home/student/pal0009/CPE-631-Term-Project/spec-config.conf -a -C -D /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark/events.csv -o /home/student/pal0009/CPE-631-Term-Project/uprof_results/$benchmark/metrics.csv -- "
     else
         export UPROF=""
     fi
@@ -116,7 +119,7 @@ function run_benchmark {
         $UPROF $CORE_PIN $rundir/cpugcc_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
     elif [ $benchname = "xalancbmk_r" ] ; then
         echo "detected xalancbmk, running on core $core"
-        $UPROF $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
+        $UPROF $CORE_PIN $rundir/cpuxalan_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > /dev/null 2>> $outloc/$instance.err &
     elif [ $benchname = "cactuBSSN_r" ] ; then
         echo "detected cactuBSSN, running on core $core"
         $UPROF $CORE_PIN $rundir/cactusBSSN_r_base.aocc-3-3.1.0-m64 $(flags $benchname) > $outloc/$instance.out 2>> $outloc/$instance.err &
@@ -134,11 +137,28 @@ function run_benchmark {
     fi
 }
 
-for i in $(ls -1 | grep "_r"); do
+for i in $(ls -1 | grep "$1"); do
     export RUN_DIR=$(pwd)/$i/run/run_base_refrate_aocc-3-3.1.0-m64.0000
+
+    cd /home/student/pal0009/CPE-631-Term-Project/run_scripts
+    ./debug_suite.sh $i &
+    sleep 30
+    export bname=$(cut -d '.' -f2- <<< $i)
+    if [ $bname = "gcc_r" ] ; then
+        export bname="cpugcc_r"
+    elif [ $bname = "xalancbmk_r" ] ; then
+        export bname="cpuxalan_r"
+    elif [ $bname = "cactuBSSN_r" ] ; then
+        export bname="cactusBSSN_r"
+    fi
+    pkill $bname\*
+    pkill AMDuProfPcm
+
+    sleep 5
+
     cd $RUN_DIR
     for j in 48 ; do
-        export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/scale_results/$i\_$j
+        export RESULT_LOC=/home/student/pal0009/CPE-631-Term-Project/uprof_results/$i
         rm -rf $RESULT_LOC
         mkdir $RESULT_LOC
         
@@ -148,7 +168,7 @@ for i in $(ls -1 | grep "_r"); do
         done
         wait
 
-        rm $RESULT_LOC/*.out
+        rm -f $RESULT_LOC/*.out
     done
     cd ../../..
 done
