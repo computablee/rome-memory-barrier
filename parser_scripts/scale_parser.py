@@ -59,12 +59,12 @@ def main():
                 rowA = []
                 rowM = []
             for time in timeDirList:
-                print(benchmarkScale+"/"+time)
+                #print(benchmarkScale+"/"+time)
                 file = cwd+"/"+benchmarkScale+"/"+time
                 with open(file, "r") as f:
                     realTimeLine = f.readline().strip()
                     realTime =  realTimeLine[5:]
-                print(realTime)
+                #print(realTime)
                 sum = sum + float(realTime)
                 if (float(realTime) > max):
                     max = float(realTime)
