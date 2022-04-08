@@ -1,0 +1,11 @@
+Benchmark,IPC
+531.deepsjeng_r,1.8
+525.x264_r,2.16
+548.exchange2_r,2.85
+505.mcf_r,0.59
+541.leela_r,1.12
+523.xalancbmk_r,1.08
+520.omnetpp_r,0.5
+502.gcc_r,1.19
+500.perlbench_r,2.27
+557.xz_r,0.66

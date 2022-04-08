@@ -34,7 +34,7 @@ def main():
     cwd = os.getcwd()+"/scale_results"
     benchmarkDirList = sorted(os.listdir(cwd))
     benchmarkDirList.remove('.placeholder') #remove non-benchmark entry
-    benchmarkDirList.remove('520.omnetpp_r_1')
+    #benchmarkDirList.remove('520.omnetpp_r_1')
 
     #sort directories in scaling order
     grouped_dirs = []
@@ -59,10 +59,12 @@ def main():
                 rowA = []
                 rowM = []
             for time in timeDirList:
+                print(benchmarkScale+"/"+time)
                 file = cwd+"/"+benchmarkScale+"/"+time
                 with open(file, "r") as f:
                     realTimeLine = f.readline().strip()
                     realTime =  realTimeLine[5:]
+                print(realTime)
                 sum = sum + float(realTime)
                 if (float(realTime) > max):
                     max = float(realTime)

@@ -17,3 +17,10 @@ python3 graph_parser.py
 
 echo "***********Creating Scalability CSVs for Graphing*************"
 python3 scale_parser.py
+
+echo "***************Moving Results to Single Folder****************"
+mkdir ../results
+mv ../uprof_results* ../results
+mv ../graph_data ../results
+mv ../scale_results ../results
+rm -rf ../fp_rate ../fp_speed ../int_rate ../int_speed

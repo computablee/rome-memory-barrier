@@ -31,10 +31,10 @@ def main():
 
     dirList.remove('.placeholder') #remove non-benchmark entry
     #remove benchmarks that are not in the 43
-    dirList.remove('997.specrand_fr')
-    dirList.remove('998.specrand_is')
-    dirList.remove('999.specrand_ir')
-    dirList.remove('996.specrand_fs')
+    #dirList.remove('997.specrand_fr')
+    #dirList.remove('998.specrand_is')
+    #dirList.remove('999.specrand_ir')
+    #dirList.remove('996.specrand_fs')
     
 
     #Check if any benchmark directories are missing, if any are print them
