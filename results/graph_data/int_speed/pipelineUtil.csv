@@ -1,0 +1,11 @@
+Benchmark,Pipeline Utilization
+623.xalancbmk_s,15.16
+631.deepsjeng_s,22.2
+648.exchange2_s,35.62
+625.x264_s,27.99
+620.omnetpp_s,7.77
+602.gcc_s,19.2
+600.perlbench_s,32.01
+657.xz_s,15.92
+605.mcf_s,9.65
+641.leela_s,14.16

@@ -1,0 +1,11 @@
+Benchmark,IPC
+623.xalancbmk_s,1.21
+631.deepsjeng_s,1.78
+648.exchange2_s,2.85
+625.x264_s,2.24
+620.omnetpp_s,0.62
+602.gcc_s,1.54
+600.perlbench_s,2.56
+657.xz_s,1.27
+605.mcf_s,0.77
+641.leela_s,1.13

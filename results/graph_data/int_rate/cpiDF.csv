@@ -1,0 +1,11 @@
+Benchmark,CPI,DF
+531.deepsjeng_r,0.56,7.74
+525.x264_r,0.46,8.1
+548.exchange2_r,0.35,0.0
+505.mcf_r,1.71,52.59
+541.leela_r,0.89,1.72
+523.xalancbmk_r,0.92,17.39
+520.omnetpp_r,2.0,27.68
+502.gcc_r,0.84,15.41
+500.perlbench_r,0.44,7.32
+557.xz_r,1.52,20.18

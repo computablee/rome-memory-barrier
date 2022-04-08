@@ -1,0 +1,10 @@
+Benchmark,IPC
+654.roms_s,0.56
+607.cactuBSSN_s,1.01
+619.lbm_s,0.35
+638.imagick_s,2.9
+649.fotonik3d_s,0.39
+628.pop2_s,0.76
+644.nab_s,1.71
+603.bwaves_s,0.76
+621.wrf_s,0.72

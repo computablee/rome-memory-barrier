@@ -1,0 +1,14 @@
+Benchmark,IPC
+527.cam4_r,2.04
+519.lbm_r,0.63
+510.parest_r,1.53
+521.wrf_r,1.69
+526.blender_r,1.91
+508.namd_r,2.43
+549.fotonik3d_r,0.42
+511.povray_r,2.39
+544.nab_r,1.86
+503.bwaves_r,0.37
+507.cactuBSSN_r,0.77
+538.imagick_r,2.44
+554.roms_r,0.63

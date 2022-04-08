@@ -1,0 +1,42 @@
+Metric Name,Cumulative
+Utilization (%),82.84041666666667
+Eff Freq,3345.929583333333
+IPC (Sys + User),2.899583333333334
+CPI (Sys + User),0.34479166666666644
+Pipeline Utilization (%),36.24729166666666
+L2 Access (pti),29.79729166666667
+L2 Access from IC Miss (pti),0.06270833333333332
+L2 Access from DC Miss (pti),26.108333333333334
+L2 Access from HWPF (pti),3.7650000000000006
+L2 Miss (pti),0.6791666666666666
+L2 Miss from IC Miss (pti),0.024791666666666684
+L2 Miss from DC Miss (pti),0.2504166666666668
+L2 Miss from HWPF (pti),0.4029166666666666
+L2 Hit (pti),29.231875000000002
+L2 Hit from IC Miss (pti),0.031875000000000014
+L2 Hit from DC Miss (pti),25.652083333333326
+L2 Hit from HWPF (pti),3.3629166666666666
+L3 Access,5183106549.0
+L3 Miss,2709991682.0
+L3 Hit Rate (%),48.44124999999999
+L3 Miss Rate (%),51.558749999999996
+Ave L3 Miss Latency,652.3443750000001
+Total Mem Bw (GB/s),15.99
+Total Mem RdBw (GB/s),12.49
+Total Mem WrBw (GB/s),3.5
+Mem Ch-A RdBw (GB/s),1.73
+Mem Ch-A WrBw (GB/s),0.46
+Mem Ch-B RdBw (GB/s),1.71
+Mem Ch-B WrBw (GB/s),0.46
+Mem Ch-C RdBw (GB/s),2.35
+Mem Ch-C WrBw (GB/s),0.63
+Mem Ch-D RdBw (GB/s),2.39
+Mem Ch-D WrBw (GB/s),0.63
+Mem Ch-E RdBw (GB/s),0.67
+Mem Ch-E WrBw (GB/s),0.23
+Mem Ch-F RdBw (GB/s),0.67
+Mem Ch-F WrBw (GB/s),0.23
+Mem Ch-G RdBw (GB/s),1.48
+Mem Ch-G WrBw (GB/s),0.42000000000000004
+Mem Ch-H RdBw (GB/s),1.49
+Mem Ch-H WrBw (GB/s),0.42000000000000004
