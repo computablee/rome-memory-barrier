@@ -45,9 +45,10 @@ def main():
     #Create CSV for graphing by suite
     for benchmark in dirList:
         inputEvents = os.getcwd()+'/uprof_results_cumulative/'+benchmark+"/events.csv"
-        parseCSVsForGraphCSVs(inputEvents, benchmark)
+        inputMetrics = os.getcwd()+'/uprof_results_cumulative/'+benchmark+"/metrics.csv"
+        parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark)
 
-def parseCSVsForGraphCSVs(inputEvents, benchmark):
+def parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark):
     events = []
     metrics = []
 
@@ -64,9 +65,18 @@ def parseCSVsForGraphCSVs(inputEvents, benchmark):
 
         for row in reader:
             events.append(row)
+    #read in metrics data
+    with open(inputMetrics, 'r') as file:
+        reader = csv.reader(file)
+
+        #skip column headers
+        next(reader)
+
+        for row in reader:
+            metrics.append(row)
 
     genParams = processCSVsGenParams(events, benchmark)
-    cacheBreak = processCSVsCacheBreakdown(events, benchmark)
+    cacheBreak = processCSVsCacheBreakdown(events, metrics, benchmark)
 
     #check which suite this benchmark belongs to
     if (intRate.count(benchmark) > 0):
@@ -115,21 +125,28 @@ def processCSVsGenParams(events, benchmark):
     return row
 
 
-def processCSVsCacheBreakdown(events, benchmark):
-    l2Access = float(float(events[11][1])+float(events[12][1])/1000)
-    l2Miss = float(float(events[17][1])+float(events[18][1])/1000)
+def processCSVsCacheBreakdown(events, metrics, benchmark):
+    instr = float(events[4][1])
+    l2Access = float(metrics[5][1])
+    l2Miss = float(metrics[9][1])
     l2MissRate = round((float(l2Miss/l2Access)*100),2)
-    l3Access = float(float(events[24][1])/1000)
-    l3Miss = float(float(events[25][1])/1000)
-    l3MissRate = round((float(l3Miss/l3Access)*100),2)
+    l2HitRate = round(((1-float(l2Miss/l2Access))*100),2)
+    l3Access = float(float(events[24][1])*1000)
+    l3Access = float(l3Access/instr)
+    l3Miss = float(float(events[25][1])*1000)
+    l3Miss = float(l3Miss/instr)
+    l3MissRate = float(metrics[20][1])
+    l3HitRate = float(metrics[19][1])
     row = []
     row.append(benchmark)
     row.append(str(l2Access))
     row.append(str(l2Miss))
     row.append(str(l2MissRate))
+    row.append(str(l2HitRate))
     row.append(str(l3Access))
     row.append(str(l3Miss))
     row.append(str(l3MissRate))
+    row.append(str(l3HitRate))
 
     return row
 
@@ -167,7 +184,7 @@ def verifyDirectoriesNeededExist():
     
 def attachHeaders():
     genParamHeaders = ['Benchmark', 'Cycles [Billions]', 'Instr. [Billions]', 'Branches [Billions]', 'Loads [Billions]', 'Stores [Billions]', 'IPC']
-    cacheBreakHeaders = ['Benchmark','L2 Access Per 1K Instr.', 'L2 Miss Per 1K Instr.', 'L2 Miss Rate (%)', 'L3 Access Per 1K Instr.', 'L3 Miss Per 1K Instr.', 'L3 Miss Rate (%)']
+    cacheBreakHeaders = ['Benchmark','L2 Access Per 1K Instr.', 'L2 Miss Per 1K Instr.', 'L2 Miss Rate (%)', 'L2 Hit Rate (%)', 'L3 Access Per 1K Instr.', 'L3 Miss Per 1K Instr.', 'L3 Miss Rate (%)', 'L3 Hit Rate (%)']
     attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/int_rate"+"/general_parameters.csv"))
     attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/int_speed"+"/general_parameters.csv"))
     attachHeadersCSVs(genParamHeaders, (os.getcwd()+"/graph_data/fp_rate"+"/general_parameters.csv"))
