@@ -125,8 +125,12 @@ def processCSVsIPC(events, benchmark):
 
 
 def processCSVsPipelineUtilization(events, benchmark):
-    #pipeline util (%) = RetdInst/CpuCycles/8*100
-    pipelineUtil = round(((float(events[4][1])/float(events[3][1]))/8*100), 2)
+    #pipeline util (%) = RetdInst/CpuCycles/6*100
+    instr= float(events[4][1])
+    cycle = float(events[3][1])
+    ipc = float(instr/cycle)
+    ipcDivSix = float(ipc/6)
+    pipelineUtil = round(ipcDivSix*100, 2)
     row = []
     row.append(benchmark)
     row.append(str(pipelineUtil))
