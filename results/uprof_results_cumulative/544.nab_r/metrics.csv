@@ -1,42 +1,42 @@
 Metric Name,Cumulative
-Utilization (%),99.65
-Eff Freq,3351.09
-IPC (Sys + User),1.86
-CPI (Sys + User),0.54
-Pipeline Utilization (%),23.19
-L2 Access (pti),18.01
-L2 Access from IC Miss (pti),0.07
-L2 Access from DC Miss (pti),12.36
-L2 Access from HWPF (pti),3.67
-L2 Miss (pti),1.21
-L2 Miss from IC Miss (pti),0.06
-L2 Miss from DC Miss (pti),0.34
-L2 Miss from HWPF (pti),0.82
-L2 Hit (pti),16.50
-L2 Hit from IC Miss (pti),0.01
-L2 Hit from DC Miss (pti),11.72
-L2 Hit from HWPF (pti),2.85
-L3 Access,1407726307.00
-L3 Miss,722512688.00
-L3 Hit Rate (%),48.68
-L3 Miss Rate (%),51.32
-Ave L3 Miss Latency,357.75
-Total Mem Bw (GB/s),5.04
-Total Mem RdBw (GB/s),4.80
-Total Mem WrBw (GB/s),0.24
-Mem Ch-A RdBw (GB/s),1.08
-Mem Ch-A WrBw (GB/s),0.06
-Mem Ch-B RdBw (GB/s),1.08
-Mem Ch-B WrBw (GB/s),0.06
-Mem Ch-C RdBw (GB/s),0.70
-Mem Ch-C WrBw (GB/s),0.04
-Mem Ch-D RdBw (GB/s),0.70
-Mem Ch-D WrBw (GB/s),0.04
-Mem Ch-E RdBw (GB/s),0.05
-Mem Ch-E WrBw (GB/s),0.00
-Mem Ch-F RdBw (GB/s),0.05
-Mem Ch-F WrBw (GB/s),0.00
-Mem Ch-G RdBw (GB/s),0.57
-Mem Ch-G WrBw (GB/s),0.02
-Mem Ch-H RdBw (GB/s),0.57
-Mem Ch-H WrBw (GB/s),0.02
+Utilization (%),99.27229166666667
+Eff Freq,3346.83375
+IPC (Sys + User),1.8606249999999998
+CPI (Sys + User),0.5383333333333329
+Pipeline Utilization (%),23.259375000000006
+L2 Access (pti),18.17375
+L2 Access from IC Miss (pti),0.06270833333333335
+L2 Access from DC Miss (pti),12.423958333333333
+L2 Access from HWPF (pti),3.808125000000001
+L2 Miss (pti),1.2752083333333333
+L2 Miss from IC Miss (pti),0.05479166666666668
+L2 Miss from DC Miss (pti),0.3400000000000001
+L2 Miss from HWPF (pti),0.8802083333333334
+L2 Hit (pti),16.822708333333335
+L2 Hit from IC Miss (pti),0.01020833333333334
+L2 Hit from DC Miss (pti),11.82625
+L2 Hit from HWPF (pti),2.9287499999999995
+L3 Access,23752025226.0
+L3 Miss,11532074051.0
+L3 Hit Rate (%),51.3325
+L3 Miss Rate (%),48.6675
+Ave L3 Miss Latency,355.35125000000005
+Total Mem Bw (GB/s),10.32
+Total Mem RdBw (GB/s),9.83
+Total Mem WrBw (GB/s),0.49
+Mem Ch-A RdBw (GB/s),2.21
+Mem Ch-A WrBw (GB/s),0.12
+Mem Ch-B RdBw (GB/s),2.21
+Mem Ch-B WrBw (GB/s),0.12
+Mem Ch-C RdBw (GB/s),1.43
+Mem Ch-C WrBw (GB/s),0.08
+Mem Ch-D RdBw (GB/s),1.43
+Mem Ch-D WrBw (GB/s),0.08
+Mem Ch-E RdBw (GB/s),0.1
+Mem Ch-E WrBw (GB/s),0.0
+Mem Ch-F RdBw (GB/s),0.1
+Mem Ch-F WrBw (GB/s),0.0
+Mem Ch-G RdBw (GB/s),1.18
+Mem Ch-G WrBw (GB/s),0.04
+Mem Ch-H RdBw (GB/s),1.18
+Mem Ch-H WrBw (GB/s),0.04

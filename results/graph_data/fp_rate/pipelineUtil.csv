@@ -1,14 +1,14 @@
 Benchmark,Pipeline Utilization
-527.cam4_r,33.98
-519.lbm_r,10.49
-510.parest_r,25.56
-521.wrf_r,28.1
-526.blender_r,31.9
-508.namd_r,40.52
-549.fotonik3d_r,7.0
-511.povray_r,39.77
-544.nab_r,30.92
-503.bwaves_r,6.23
-507.cactuBSSN_r,12.91
-538.imagick_r,40.63
-554.roms_r,10.58
+527.cam4_r,33.69
+519.lbm_r,10.14
+510.parest_r,25.85
+521.wrf_r,28.11
+526.blender_r,31.53
+508.namd_r,40.56
+549.fotonik3d_r,6.99
+511.povray_r,39.58
+544.nab_r,31.01
+503.bwaves_r,5.99
+507.cactuBSSN_r,12.82
+538.imagick_r,40.39
+554.roms_r,10.3

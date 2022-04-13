@@ -1,11 +1,11 @@
 Benchmark,Pipeline Utilization
-531.deepsjeng_r,29.96
-525.x264_r,36.07
-548.exchange2_r,47.45
-505.mcf_r,9.76
-541.leela_r,18.73
-523.xalancbmk_r,18.02
-520.omnetpp_r,8.33
-502.gcc_r,19.88
-500.perlbench_r,37.8
-557.xz_r,10.94
+531.deepsjeng_r,29.95
+525.x264_r,36.34
+548.exchange2_r,47.49
+505.mcf_r,9.88
+541.leela_r,18.68
+523.xalancbmk_r,16.63
+520.omnetpp_r,8.26
+502.gcc_r,21.62
+500.perlbench_r,37.84
+557.xz_r,11.86
