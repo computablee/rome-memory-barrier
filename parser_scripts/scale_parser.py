@@ -34,7 +34,6 @@ def main():
     cwd = os.getcwd()+"/scale_results"
     benchmarkDirList = sorted(os.listdir(cwd))
     benchmarkDirList.remove('.placeholder') #remove non-benchmark entry
-    #benchmarkDirList.remove('520.omnetpp_r_1')
 
     #sort directories in scaling order
     grouped_dirs = []
@@ -49,7 +48,6 @@ def main():
     #get int and fp avg and max data into their own lists
     for benchmark in sorted_dirs:
         count = 0
-        print(benchmark)
         for benchmarkScale in benchmark:
             benchmarkName = benchmarkScale[:benchmarkScale.index("_r")+len("_r")]
             timeDirList = os.listdir(cwd+"/"+benchmarkScale)

@@ -103,9 +103,6 @@ def parseCSVsForGraphCSVs(inputEvents, inputMetrics, benchmark):
         writeToSuiteMetricSpecificCSV(cpiDF, (os.getcwd()+"/graph_data/fp_speed"+"/cpiDF.csv"))
 
 def attachHeadersCSVs(headers, filename):
-    #make sure csv exists for appending
-    Path(filename).touch()
-
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(headers)
@@ -128,8 +125,12 @@ def processCSVsIPC(events, benchmark):
 
 
 def processCSVsPipelineUtilization(events, benchmark):
-    #pipeline util (%) = RetdInst/CpuCycles/8*100
-    pipelineUtil = round(((float(events[4][1])/float(events[3][1]))/8*100), 2)
+    #pipeline util (%) = RetdInst/CpuCycles/6*100
+    instr= float(events[4][1])
+    cycle = float(events[3][1])
+    ipc = float(instr/cycle)
+    ipcDivSix = float(ipc/6)
+    pipelineUtil = round(ipcDivSix*100, 2)
     row = []
     row.append(benchmark)
     row.append(str(pipelineUtil))
@@ -149,10 +150,11 @@ def processCSVsCPIDF(events, metrics, benchmark):
 
 def verifyDirectoriesNeededExist():
     #create /graph_data directory is doesn't exist
-    directory = os.getcwd()+"/graph_data"
+    home = os.getcwd()
+    directory = home+"/graph_data"
     if (not (os.path.exists(directory))):
         os.makedirs(directory)
-    #os.chdir(directory)
+    os.chdir(directory)
 
     #create /graph_data/int_speed directory is doesn't exist
     subdir1 = os.getcwd()+"/int_speed"
@@ -174,7 +176,7 @@ def verifyDirectoriesNeededExist():
     subdir4 = os.getcwd()+"/fp_rate"
     if (not (os.path.exists(subdir4))):
         os.mkdir(subdir4)
-    
+    os.chdir(home)
 
 def attachHeaders():
     ipcHeaders = ['Benchmark', 'IPC']

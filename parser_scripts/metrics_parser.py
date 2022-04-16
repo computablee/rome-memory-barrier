@@ -46,8 +46,8 @@ def main():
         for entry in list_difference:
             print(entry)
 
-    serial = intRate+fpRate+fpIntSpeedSerial
-    parallel = fpIntSpeedParallel
+    serial = fpIntSpeedSerial
+    parallel = intRate+fpRate+fpIntSpeedParallel
 
     #Parse Serial benchmarks
     for benchmark in serial:
